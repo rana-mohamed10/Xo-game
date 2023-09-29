@@ -1,6 +1,10 @@
+import 'dart:math';
+
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:xo_game/BoardButton.dart';
 import 'package:xo_game/StartScreen.dart';
+import 'NeonContainer.dart';
 
 class BoardScreen extends StatefulWidget {
   static const String routeName = "BoardScreen";
@@ -10,6 +14,8 @@ class BoardScreen extends StatefulWidget {
 }
 
 class _BoardScreenState extends State<BoardScreen> {
+  final _controller=ConfettiController();
+  bool isplay=false;
   int player1Score = 0;
   int player2Score = 0;
   List<String> ButtonState = ['', '', '', '', '', '', '', '', ''];
@@ -24,6 +30,7 @@ class _BoardScreenState extends State<BoardScreen> {
       ),
       body: Column(
         children: [
+          if(isplay)Confetti(),
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -105,9 +112,11 @@ class _BoardScreenState extends State<BoardScreen> {
                     OnPlayerState: (pos) => PlayerState(7)),
                 BoardButton(ButtonState[8], 8,
                     OnPlayerState: (pos) => PlayerState(8)),
+
               ],
             ),
           )
+
         ],
       ),
     );
@@ -133,12 +142,17 @@ class _BoardScreenState extends State<BoardScreen> {
     counter++;
     if (CheckWinner("X")) {
       player1Score += 5;
+      isplay=true;
+      ShowDialog('X');
       initBoard();
     } else if (CheckWinner("O")) {
       player2Score += 5;
+      isplay=true;
+      ShowDialog('O');
       initBoard();
     } else if (counter > 9) {
       initBoard();
+
     }
 
   }
@@ -170,20 +184,30 @@ class _BoardScreenState extends State<BoardScreen> {
   }
 
   void ShowDialog(String text) {
+    BoardArgs args = ModalRoute.of(context)?.settings.arguments as BoardArgs;
+
     if (CheckWinner(text)) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
+            title: Center(child: Text("Congratulations!")),
             content: SingleChildScrollView(
-              child: text == 'X'
-                  ? Text("The Winner is 'X'")
-                  : Text("The Winner is 'O'"),
+              child: Column(
+                children: [
+                  Image.asset('assets/Capture.PNG',width: 250,height: 240,),
+                  SizedBox(height: 10,),
+                  text == 'X'
+                      ? Center(child: MyNeonContainer('The Winner is ${args.Player1} \n Score : $player1Score '))
+                      : Center(child: MyNeonContainer("The Winner is ${args.PLayer2} \n Score : $player2Score ")),
+                ],
+              )
             ),
             actions: [
               TextButton(
-                child: const Text('OK'),
+                child: const Text('Continue Playing',style: TextStyle(color: Colors.black,fontSize: 20),),
                 onPressed: () {
+
                   Navigator.of(context).pop();
                 },
               ),
@@ -193,4 +217,24 @@ class _BoardScreenState extends State<BoardScreen> {
       );
     }
   }
+
+  Widget Confetti() {
+
+    _controller.play();
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        ConfettiWidget(
+          confettiController: _controller,
+          blastDirectionality: BlastDirectionality.explosive, //All Directions
+          colors: const [Colors.blue, Colors.pink, Colors.yellow],
+          gravity: 0.7,
+          emissionFrequency: 0.2,
+        ),
+
+      ],
+    );
+  }
+
+
 }
