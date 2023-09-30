@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:xo_game/BoardButton.dart';
 import 'package:xo_game/StartScreen.dart';
 import 'NeonContainer.dart';
+import 'confetti.dart';
 
 class BoardScreen extends StatefulWidget {
   static const String routeName = "BoardScreen";
@@ -215,24 +216,6 @@ class _BoardScreenState extends State<BoardScreen> {
         },
       );
     }
-  }
-
-  Widget Confetti() {
-
-    _controller.play();
-    return Stack(
-      alignment: Alignment.topCenter,
-      children: [
-        ConfettiWidget(
-          confettiController: _controller,
-          blastDirectionality: BlastDirectionality.explosive, //All Directions
-          colors: const [Colors.blue, Colors.pink, Colors.yellow],
-          gravity: 0.7,
-          emissionFrequency: 0.2,
-        ),
-
-      ],
-    );
   }
 
 
